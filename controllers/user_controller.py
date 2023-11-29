@@ -2,14 +2,14 @@ from flask import Blueprint, jsonify
 from models.model import UserAccount, db
 from flask import request
 
-user_blueprint = Blueprint('user', __name__, url_prefix='/api/v1/user')
+user_blueprint = Blueprint('user', __name__, url_prefix='/api/v1/')
 
 # all urls  (user paths):
    # Get method: /api/v1/user/<int:user_id>   (to get details of a single user)
    # Post method: /api/v1/user/               (to enter user details into the user table)
 
 
-@user_blueprint.route('/<int:user_id>', methods=['GET'])
+@user_blueprint.route('user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = UserAccount.query.get(user_id)
 
@@ -25,7 +25,7 @@ def get_user(user_id):
     else:
         return jsonify({'message': 'User not found'}), 404
 
-@user_blueprint.route('/', methods=['POST'])
+@user_blueprint.route('user/', methods=['POST'])
 def create_user():
     try:
         # Check if the request contains JSON data

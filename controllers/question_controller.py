@@ -3,12 +3,12 @@ from models.model import Question, db
 from flask import request
 
 
-question_blueprint = Blueprint('question', __name__, url_prefix='/api/v1/question')
+question_blueprint = Blueprint('question', __name__, url_prefix='/api/v1/')
 
 # endpoints:
 #  GET /api/v1/question/<int:question_id>  (to get question)
 #  POST /api/v1/question/register          (to register new question)
-@question_blueprint.route('/<int:question_id>', methods=['GET'])
+@question_blueprint.route('question/<int:question_id>', methods=['GET'])
 def get_questions(question_id):
     ques = Question.query.get(question_id)
 
@@ -24,7 +24,7 @@ def get_questions(question_id):
         return jsonify({'message': 'Question does not exist'}), 404
 
 
-@question_blueprint.route('/all', methods=['GET'])
+@question_blueprint.route('question/all', methods=['GET'])
 def get_all_questions():
     ques_all = Question.query.all()
 
