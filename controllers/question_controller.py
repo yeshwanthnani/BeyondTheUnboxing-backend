@@ -24,7 +24,7 @@ def get_questions(question_id):
         return jsonify({'message': 'Question does not exist'}), 404
 
 
-@question_blueprint.route('question/all', methods=['GET'])
+@question_blueprint.route('question/all/', methods=['GET'])
 def get_all_questions():
     ques_all = Question.query.all()
 
@@ -47,7 +47,7 @@ def get_all_questions():
     else:
         return jsonify({'message': 'No Questions found'}), 404
 
-@question_blueprint.route('/register',methods=['POST'])
+@question_blueprint.route('question/register/',methods=['POST'])
 def register():
     try:
         # Check if the request contains JSON data

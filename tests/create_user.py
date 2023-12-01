@@ -3,7 +3,10 @@
 import json
 import requests
 from flask import Flask
-from models.model import UserAccount, db  # Import the UserAccount model and db
+from sqlalchemy.exc import IntegrityError
+from models.model import UserAccount, db
+from models.exceptions import UserAlreadyExists
+# Import the UserAccount model and db
 
 app = Flask(__name__)
 
@@ -25,7 +28,24 @@ def create_user(user_name, user_email, password, year_of_birth):
         headers = {
             "Content-Type": "application/json"
         }
-        response = requests.post(url=endpoint, data=body, headers=headers)
-        assert response.status_code == 201
-        created_user = UserAccount.query.filter_by(user_name=user_name).first()
-        return created_user
+
+        # response = requests.post(url=endpoint, data=body, headers=headers)
+        # assert response.status_code == 201
+        # created_user = UserAccount.query.filter_by(user_name=user_name).first()
+        # return created_user
+
+        try:
+            response = requests.post(url=endpoint, data=body, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Error creating user: {e}")
+            raise UserAlreadyExists()
+
+        try:
+            assert response.status_code == 201
+            created_user = UserAccount.query.filter_by(user_name=user_name).first()
+            return created_user
+        except IntegrityError:
+            db.session.rollback()
+            print("Error: User with the same details already exists.")
+            raise UserAlreadyExists()

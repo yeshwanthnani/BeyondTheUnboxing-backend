@@ -26,7 +26,7 @@ def get_mobile(mobile_id):
     else:
         return jsonify({'message': 'Mobile not found'}), 404
 
-@mobile_blueprint.route('/', methods=['GET'])
+@mobile_blueprint.route('/all/', methods=['GET'])
 def get_all_mobiles():
     mobiles = Mobile.query.all()
 

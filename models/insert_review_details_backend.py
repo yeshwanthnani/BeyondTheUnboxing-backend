@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # Create an instance of TestDataInserter and call the insert_sample_data method
     data_inserter = TestDataInserter(session)
-    data_inserter.insert_review_data(user_ID=1, mobile_ID=1)  # Specify the user_id for which you want to insert reviews
+    data_inserter.insert_review_data(user_ID=91, mobile_ID=54)  # Specify the user_id for which you want to insert reviews
 
     # Close the session
     session.close()

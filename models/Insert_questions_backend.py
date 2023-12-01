@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from model import Question
 
 
-class TestDataInserter:
+class AddQuestionsBackend:
     def __init__(self, session: Session):
         self.session = session
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     session = Session()
 
     # Create an instance of TestDataInserter and call the insert_sample_data method
-    data_inserter = TestDataInserter(session)
+    data_inserter = AddQuestionsBackend(session)
     data_inserter.insert_questions()
 
     # Close the session
