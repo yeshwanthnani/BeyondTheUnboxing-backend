@@ -26,3 +26,5 @@ urllib3==2.0.3
 virtualenv==20.16.5
 virtualenv-clone==0.5.7
 Werkzeug==3.0.1
+
+pytest~=7.4.3

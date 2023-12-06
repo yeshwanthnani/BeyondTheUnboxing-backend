@@ -1,82 +1,52 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, make_response
 from models.model import Question, db
 from flask import request
-
+from models.Constants import HttpStatus, ResponseMessages
+from DBLayer.Questionhandler import QuestionHandler
+from models.exceptions import QuestionAlreadyExists, QuestionDoesNotExists
 
 question_blueprint = Blueprint('question', __name__, url_prefix='/api/v1/')
 
-# endpoints:
-#  GET /api/v1/question/<int:question_id>  (to get question)
-#  POST /api/v1/question/register          (to register new question)
-@question_blueprint.route('question/<int:question_id>', methods=['GET'])
-def get_questions(question_id):
-    ques = Question.query.get(question_id)
 
-    if ques:
-        question_data = {
-            'question_ID': ques.question_ID,
-            'question_text': ques.question_text,
-            'created_on': ques.created_on,
-        }
+"""-----------------endpoints---------------------:
 
-        return jsonify(question_data)
-    else:
-        return jsonify({'message': 'Question does not exist'}), 404
+ create :        POST     /api/v1/question/<int:question_id>/  (to create question)
+ get_question:   GET      /api/v1/question/<int:question_id>/   (to get question)"""
 
 
-@question_blueprint.route('question/all/', methods=['GET'])
-def get_all_questions():
-    ques_all = Question.query.all()
-
-    questions_data = []
-
-    for every_question in ques_all:
-
-        all_questions_data = {
-
-            'question_ID': every_question.question_ID,
-            'question_text': every_question.question_text,
-            'created_on': every_question.created_on,
-        }
-
-        questions_data.append(all_questions_data)
-
-
-    if questions_data:
-        return jsonify(questions_data)
-    else:
-        return jsonify({'message': 'No Questions found'}), 404
-
-@question_blueprint.route('question/register/',methods=['POST'])
-def register():
+@question_blueprint.route('question/', methods=['POST'])
+def create_question():
     try:
         # Check if the request contains JSON data
         if not request.is_json:
-            return jsonify({'error': 'Unsupported Media Type'}), 415
-
+            return make_response(jsonify({'error': 'Unsupported Media Type'}), HttpStatus.UN_SUPPORTED_MEDIA_TYPE.value)
         data = request.get_json()
-
-        required_fields = ['question_text']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({'error': f'Missing required field: {field}'}), 400
-
+        required_field = 'question_text'
+        if required_field not in data:
+            return make_response((jsonify({'error': f'Missing required field: {required_field}'})),
+                                 HttpStatus.BAD_REQUEST.value)
         # create new question
-        new = Question(
-            question_text = data['question_text']
+
+        new = QuestionHandler.create_question(
+            data['question_text']
         )
-
-        db.session.add(new)
-        db.session.commit()
-
         response_data = {
-            'message': 'New question entry created successfully',
+            'message': ResponseMessages.CREATED.value,
             'question_ID': new.question_ID
         }
 
-        return jsonify(response_data), 201
+        return make_response(jsonify(response_data), HttpStatus.CREATED.value)
 
-    except Exception as e:
+    except QuestionAlreadyExists as e:
 
         # Handle other potential exceptions
-        return jsonify({'error': str(e)}), 500
+        return make_response(jsonify({'error': e.message}), HttpStatus.BAD_REQUEST.value)
+
+
+@question_blueprint.route('question/<int:question_id>', methods=['GET'])
+def get_questions(question_id):
+    try:
+        ques = QuestionHandler.get_question(question_id)
+        return make_response(jsonify(ques), HttpStatus.SUCCESS.value)
+    except QuestionDoesNotExists as e:
+        return make_response(jsonify({'message': e.message}), HttpStatus.BAD_REQUEST.value)

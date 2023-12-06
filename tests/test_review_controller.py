@@ -1,4 +1,4 @@
-from models.model import db,Mobile,Question,UserAccount, Review
+from models.model import db ,Mobile ,Question,UserAccount, Review
 from app import app
 import json
 import pytest
@@ -25,7 +25,7 @@ def init_database(request):
                 db.session.query(Review).filter(Review.user_ID.in_(user_ids), Review.mobile_ID.in_(mobile_ids)).delete()
 
                 # Delete records from UserAccount table
-                db.session.query(UserAccount).filter(UserAccount.user_ID.in_(user_ids)).delete()`
+                db.session.query(UserAccount).filter(UserAccount.user_ID.in_(user_ids)).delete()
 
                 # Delete records from Mobile table
                 db.session.query(Mobile).filter(Mobile.mobile_ID.in_(mobile_ids)).delete()
